@@ -17,10 +17,10 @@
             "type": "sftp",
             "name": "aliyun",
             "dir": "/root/source/exercise",
-            "host": "120.27.17.100",
+            "host": "106.13.191.217",
             "port": 22,
             "user": "root",
-            "privateKey": "/Users/jinping/.ssh/id_rsa"
+            "privateKey": "/Users/jessica/.ssh/id_rsa"
         }],
     },
 }
