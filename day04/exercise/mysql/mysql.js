@@ -7,11 +7,22 @@
         database: 'jessica'
     }
     const connection = await mysql.createConnection(conf)
-    console.log(connection)
+    // console.log(connection)创建一个表格
     let ret = await connection.execute(`
-      CREATE TABLE IF NOT EXISTS TEST(
-          
-      )
+        CREATE TABLE IF NOT EXISTS test (
+            id INT NOT NULL AUTO_INCREMENT,
+            message VARCHAR(45) NULL,
+        PRIMARY KEY (id))
     `)
+    console.log('create', ret)
+    // insert one data
+    ret = await connection.execute(`
+      INSERT INTO test(message) VALUES(?)
+    `,['abc'])
+    console.log(ret)
+    const [rows,fields] = await connection.execute(`
+       SELECT * FROM test
+    `)
+    console.log(JSON.stringify(rows, '' , '\t'))
 
 } )()
