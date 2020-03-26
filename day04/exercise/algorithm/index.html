@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var arr = [1,2,4,8,6]
+        var object = {}
+        var balaceObject = {}
+        var len = arr.length
+        var sum = 7
+        function balance() {
+            for(var i=0;i<len;i++){
+                object[i] = arr[i]
+                balaceObject[i] = 7 - object[i]
+                for (var key in balaceObject){
+                    console.log(balaceObject[key] + '🌞')
+                    console.log(object[i] + '🌛')
+                    if (balaceObject[key] === object[i]) {
+                        console.log('🍉')
+                        return {
+                            index1: key,
+                            index2: i 
+                        }
+                    }
+                }
+            }
+        }
+
+       console.log(balance())
+    //    console.log(balance())
+    </script>
+</body>
+</html>
