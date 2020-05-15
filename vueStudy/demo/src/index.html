@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- import CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <el-button type="primary" @click="addListItem()" size="mini"
+        >添加</el-button
+      >
+      <el-button type="success" @click="saveList('form')" size="mini">保存</el-button>
+      <el-form :model="model" ref="form" size="small">
+        <el-table :data="model.list" style="width: 100%;" row-key="key">
+          <el-table-column
+            v-for="item in tableHeadData"
+            :key="item.key"
+            :label="item.label"
+            :width="item.width"
+          >
+            <template slot-scope="scope">
+              <el-form-item
+                :prop="'list.' + scope.$index + '.'+item.name"
+                :rules="scope.row.isEdit ? rules[item.name] : {}"
+              >
+                <!-- 判断是展示列表还是新增 
+                判断编辑状态下是input还是select -->
+                <span v-if="!scope.row.isEdit && isSelect.indexOf(item.name) < 0">{{ scope.row[item.name] }}</span>
+                <el-input
+                  v-model="scope.row[item.name]"
+                  v-if="scope.row.isEdit && isSelect.indexOf(item.name) < 0"
+                ></el-input>
+                <el-select
+                  v-model="scope.row[item.name]"
+                  v-if="isSelect.indexOf(item.name) > -1"
+                  :disabled="!scope.row.isEdit"
+                >
+                  <el-option
+                    v-for="childItem in scope.row[item.name+'List']"
+                    :key="childItem.value"
+                    :label="childItem.label"
+                    :value="childItem.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- </el-form-item> -->
+      </el-form>
+    </div>
+  </body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        // 可以把校验规则单独提出一个js文件 通过export方式导
+        // 写在这里是为了此篇博客的展示
+        var validatePass = (rule, value, callback) => {
+          console.log(rule, value)
+          if (value === '') {
+            callback(new Error('请输入Warehouse'))
+          }
+          if (value) {
+            // 用写死value的方式 模拟接口请求
+            if (value == '345') {
+              callback(new Error('Warehouse已经存在'))
+            } else {
+              callback()
+            }
+          }
+        }
+        return {
+          // list数据
+          model: {
+            list: []
+          },
+          newModel: [],
+          // 表头字段
+          tableHeadData: [
+            {
+              name: 'warehouse',
+              width: 160,
+              label: 'Warehouse'
+            },
+            {
+              name: 'description',
+              width: 160,
+              label: 'Description'
+            },
+            {
+              name: 'warehouseType',
+              width: 160,
+              label: 'Warehouse Type'
+            },
+            {
+              name: 'extWarehouse',
+              width: 160,
+              label: 'Ext Warehouse'
+            },
+            {
+              name: 'goodsReceiptStep',
+              width: 160,
+              label: 'Goods Receipt Step'
+            },
+            {
+              name: 'goodsIssueStep',
+              width: 160,
+              label: 'Goods Issue Step'
+            },
+            {
+              name: 'pickingStrategy',
+              width: 160,
+              label: 'Picking Strategy'
+            },
+            {
+              name: 'email',
+              width: 210,
+              label: 'Email'
+            },
+          ],
+          // 下拉选项判断条件
+          isSelect: ['warehouseType', 'goodsReceiptStep', 'pickingStrategy'],
+          // 校验规则
+          rules: {
+            warehouse: [{ validator: validatePass, trigger: 'blur' }],
+            description: [
+              { required: true, message: '请输入description', trigger: 'blur'}
+            ],
+            warehouseType: [
+              { required: true, message: '请选择', trigger: 'change' }
+            ],
+            // 非必填但是填了就要复合email的格式
+            email: [
+              { type: 'email', message: '请输入正确的Emall', trigger: 'blur' }
+            ]
+          }
+        }
+      },
+      mounted() {
+        // 模拟接口请求赋值
+        this.model.list = [{
+          warehouse: '345',
+          description: '345',
+          warehouseType: '1',
+          extWarehouse: '1',
+          goodsReceiptStep: '1',
+          goodsIssueStep: '1',
+          pickingStrategy: 'Y',
+          email: 'guozongzhang1@163.com',
+          warehouseTypeList: [
+            { label: '内部仓库', value: '1' },
+            { label: '外部仓库', value: '2' }
+          ],
+          goodsReceiptStepList: [
+            { label: '一步', value: '1' },
+            { label: '二步', value: '2' }
+          ],
+          pickingStrategyList: [
+            { label: '跳过pick', value: 'Y' },
+            { label: '不跳过pick', value: 'N' }
+          ]
+        }]
+      },
+      methods: {
+        // 添加list
+        addListItem() {
+          let addItem = {}
+          this.tableHeadData.forEach(item => {
+            addItem[item.name] = ''
+            addItem['isEdit'] = true
+            addItem.key = Date.now()
+            addItem['warehouseTypeList'] = [
+              { label: '内部仓库', value: '1' },
+              { label: '外部仓库', value: '2' }
+            ]
+            addItem['goodsReceiptStepList'] = [
+              { label: '一步', value: '1' },
+              { label: '二步', value: '2' }
+            ]
+            addItem['pickingStrategyList'] = [
+              { label: '跳过pick', value: 'Y' },
+              { label: '不跳过pick', value: 'N' }
+            ]
+          })
+          this.model.list.unshift(addItem)
+        },
+        // 保存
+        saveList(formName) {
+          this.$refs[formName].validate(valid => {
+            if (valid) {
+              console.log('success')
+            } else {
+              console.log('error submit!!')
+              return false
+            }
+          })
+
+        }
+      }
+    })
+  </script>
+</html>

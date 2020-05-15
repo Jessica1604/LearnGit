@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+//         let htmlText = '<img style="border: 0px; width: 537px; display: block;">'
+ 
+//  let str = htmlText.replace(/<img[^>]*>/gi, function (match, capture) {
+//     return match.replace(/style\s*?=\s*?([‘"])[\s\S]*?\1/ig, 'style="max-width:100%;height:auto;"') // 替换style
+  
+//  })
+        // var html = '字体123456'
+       var html ='<span>非红色字体<span style="color: red">红色字体</span>红色字体</span>'
+        html = html.replace(/<span[^>]*>/gi, function(match,capture){
+            return match.replace(/style\s*?=\s*?([‘"])[\s\S]*?\1/ig, 'style="color:#ccc"')
+        })
+        console.log(html)
+    </script>
+</body>
+</html>
