@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import store from '../store/index.js'
 
 Vue.use(VueRouter)
 
@@ -16,7 +17,22 @@ Vue.use(VueRouter)
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../components/courseList.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../components/courseList.vue'),
+    meta: {
+      auth:true
+    },
+    beforeEnter(to,from,next) {
+      if(to.meta.auth){
+        if(store.state.user.isLogin){
+          next()
+        } else{
+          next('/login?redirect=' + to.fullPath)
+        }
+      }else {
+        next()
+      }
+    }
+    
   },
   {
     path: '/detail/:name',
@@ -26,6 +42,10 @@ Vue.use(VueRouter)
   {
     path: '*',
     component: () => import ('../views/404.vue')
+  },
+  {
+    path: '/login',
+    component:() => import('../views/login.vue')
   }
 ]
 
@@ -36,9 +56,34 @@ const router = new VueRouter({
 })
 // to 即将要进入的目标路由
 // from 当前导航将要离开的路由
-// next 
-router.beforeEach((to,from,next)=> {
+// next i
+// router.beforeEach 是全局的
+// router.beforeEach((to,from,next)=> {
+//  if(to.meta.auth){
+//    if(window.isLogin){
+//      next()
+//    } else{
+//      next('/login?redirect=' + to.fullPath)
+//    }
+//  }else{
+//    next()
+//  }
 
-})
+// })
+
+// beforeEnter(to,from,next){
+//   if(to.meta.auth){
+//    if(window.isLogin){
+//      next()
+//    }else{
+//      next('/login?redirect=' + to.fullPath)
+//    }
+//   }else{
+//      next()
+//   }
+// }
+
+// 动态添加路由 根据需要动态的添加路由
+// this.$router.addRoutes[]
 
 export default router

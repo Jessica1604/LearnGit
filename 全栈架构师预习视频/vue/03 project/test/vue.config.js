@@ -1,4 +1,4 @@
-const path = require('path')
+// const path = require('path')
 
 // function addStyleResource(rule){
 //     rule.use('style-resource')
