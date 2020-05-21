@@ -35,7 +35,8 @@
             //     console.log('用户名或密码错误')
             // })
             this['user/login']('admin').then(() => {
-                this.$router.push(this.$route.query.direct)
+                // console.log(this.$route.query.redirect)
+                this.$router.push(this.$route.query.redirect)
             }).catch(() => {
                 console.log('用户名或密码错误')
             })
