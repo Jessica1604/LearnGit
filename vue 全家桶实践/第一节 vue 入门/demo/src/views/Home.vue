@@ -7,7 +7,7 @@
       <template v-slot:content='slotProps'>从此以后我遇见青山，遇见白雾，独尝世间悲与苦，却不能与你相逢{{slotProps.bg}}</template>
     </HelloWorld> -->
     <kForm></kForm>
-    <p>{{work}}</p>
+    <!-- <p>{{work}}</p> -->
   </div>
 </template>
 
@@ -33,8 +33,8 @@ export default {
     }
   },
   mounted () {
-    this.$refs['hello'].bg = 'I lost you forever'
-    this.$children[0].bg = "I can't find you "
+    // this.$refs['hello'].bg = 'I lost you forever'
+    // this.$children[0].bg = "I can't find you "
   },
 }
 </script>
