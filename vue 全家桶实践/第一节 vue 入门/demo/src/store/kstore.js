@@ -1,5 +1,7 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex from '../until/kvuex.js'
+
+console.log(Vuex)
 
 Vue.use(Vuex)
 
@@ -17,7 +19,5 @@ export default new Vuex.Store({
     increment({context}) {
        context.increment()
     }
-  },
-  modules: {
   }
 })
