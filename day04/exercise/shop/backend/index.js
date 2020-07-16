@@ -13,6 +13,8 @@ const CartItem = require('./models/cart-item') // 购物车中间转换
 const Order = require('./models/order') // 订单
 const OrderItem = require('./models/order-item') // 订单中间转换
 
+
+// 设定数据表之间的关系
 Product.belongsTo(User, {
     constraints: true,
     onDelete: 'CASCADE'
@@ -56,12 +58,13 @@ app.use(async (ctx, next) => {
 })
 
 const router = require('koa-router')()
+// 查询所有产品
 router.get('/admin/products', async (ctx, next) => {
     // const products = await ctx.user.getProducts()
     const products = await Product.findAll()
     ctx.body = { prods: products }
 })
-
+// 创建产品
 router.post('/admin/product', async ctx => {
     const body = ctx.request.body
     const res = await ctx.user.createProduct(body)

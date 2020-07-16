@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+        .active{
+            color: blueviolet
+        }
+        .message-box{
+           width:200px;
+           height:40px;
+           line-height:40px;
+           padding:5px;
+           background: blueviolet;
+           font-size:14px;
+           text-align:center;
+        }
+        .close{
+            float:right;
+            display: inline-block;
+            width:20px;
+            height:20px;
+            text-align:center;
+            line-height:20px;
+        }
+        .fade-enter{
+            opacity: 0;
+        }
+        .fade-enter-active{
+            transition: opacity 1.5s
+        }
+        .icon{
+            width:5rem;
+            height:5rem;
+            vertical-align: middle;
+            display:inline-block;
+        }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet"
+type="text/css">
+<body>
+  <div id="app">
+      <!-- 
+          filter 过滤器主要用来过滤文本
+       -->
+      <message :show.sync="show">
+          <!-- 具名插槽 -->
+          <template v-slot:title>
+            <strong>ha ha</strong>
+          </template>
+          <!--匿名插槽 -->
+          <template v-slot:default>
+                课程新增成功
+          </template>
+      </message>
+      <message :show.sync="showWarn">
+            <!-- 具名插槽 -->
+            <template v-slot:title>
+              <strong>警告</strong>
+            </template>
+            <!--匿名插槽 -->
+            <template v-slot:default>
+                  请输入内容
+            </template>
+        </message>
+      <headering level="3"   title="车水马🐉" icon="heisenlindangao">云深不知处</headering>
+      <course-add @add-list="addList" v-model="text"></course-add>
+      <p>
+          <input type="text" v-model.number="price">
+          <button @click=updatePrice>价格设置</button>
+      </p>
+      <div>
+          <button @click="closeMessage">批量清除</button>
+        </div>
+      <course-list :data="dataList"></course-list>
+      <!-- <ul>
+          <li v-for="item in dataList" :key="item">{{item}}</li>
+      </ul> -->
+      <div>课程总数:{{count}}</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 淘宝里下载的图标库 -->
+  <script src="https://at.alicdn.com/t/font_1819067_5pe79w0l6bt.js"></script>
+  <script>
+      // 事件总线   
+      // 事件总线派发事件
+      // this.$bus.$emit('message-close')
+      // 事件总线接收事件
+      //  this.$bus.$on('message-close',() => {
+      //    this.$emit('update:show', false)    
+      //})
+      // vm.$on()
+      // vm.$emit()
+      // vm.$once()
+      // vm.$off()  // 什么都不写表示取消所有事件的监听
+      // vm.$off(‘add’)  // 取消监听名为add 的事件
+      // vm.$off('add', callback) // 取消事件监听的回调
+
+      let role = "admin"
+
+      Vue.prototype.$bus = new Vue();
+
+      // 自定义指令
+
+      Vue.directive('focus',{
+          inserted(el){
+            el.focus()
+          }
+      })
+
+      Vue.directive('permission',{
+          inserted(el,bindings){
+              if(role === bindeings.value){
+                el
+              }
+          }
+      })
+
+      // 渲染函数的使用
+      // render(createElement){
+      //   return createElement(
+      //        tag,     标签
+      //        data,    节点的属性
+      //        children 子节点
+      //    )    
+      //    
+
+      //}
+      // 渲染函数的使用
+      // 函数式组件 functional: true 适用于 无状态不会响应式变化的组件 没有实例 没有this 上下文
+      Vue.component('headering',{
+          functional: true,
+          props:['level', 'title','icon'],
+          render(h,context){  // 上下文传参
+              let children = []
+              const {level, title, icon} = context.props
+              console.log(context)
+              if(icon){
+                  children.push(
+                    h(
+                      'svg',
+                      {class: 'icon'},
+                      [
+                          h( 
+                              'use',
+                              {attrs:{'xlink:href': '#icon-'+ icon}}
+
+                          )
+                      ]
+                    )
+                  )
+                children =  children.concat(context.children)
+              }
+              return h(
+                  'h'+ level,
+                  {attrs: {title: title}},
+                  children
+              )
+          }
+      })
+      
+    //   Vue.property.$bus = new Vue()
+      //  列表组件 组件的命名最好是羊肉串命名法，因为html标签不区分大小写 驼峰命名法是不推荐
+      // props 可以是 ['dataList'] 的形式也可以是 对象的形式 对象的形式比较好可以进行标记
+      Vue.component('course-list',{
+          props:{
+            data:{
+                type:Array,
+                default:()=>{
+                    return []
+                }
+            }
+          },
+          data() {
+              return {
+
+              }
+          },
+          template: `
+            <div>
+                <ul>
+                  <li v-for="item in data" :key="item.name">
+                  {{item.name}}
+                  {{item.price | filterPrice }}
+                  </li>
+                </ul>
+            </div>
+          `,
+          filters:{
+             filterPrice(value){
+                 return '$' + value
+             } 
+          }
+      })
+
+      // 在自定义组件中没有 v-model 
+      // 这个 v-model 是一个语法糖 主要是input 里的 @input 事件和 ：value 事件
+      Vue.component('course-add',{
+        //  model: {
+        //    prop: 'value',
+        //    event: 'change'
+        //   },
+          props: ['text'],
+          template: `
+            <div>
+                <input type="text"  :value="text" @input="onInput" v-focus>
+                <input type="button" @click="addList" value="添加">
+            </div>
+          `,
+          methods: {
+              addList(){
+                  this.$emit('add-list')
+              },
+              onInput(e) {
+                  this.$emit('input', e.target.value)
+
+              }
+          }
+      })
+      // messagebox 弹框
+      Vue.component('message',{
+          props:['show'],
+          template: `
+           <transition
+             enter-active-class="animated zoomIn"
+             leave-active-class="animated zoomOut"
+           >
+                <div class="message-box" v-if="show">
+                    <slot name="title"></slot>
+                    <slot></slot>
+                    <span class="close" @click="$emit('update:show', false)">X</span>
+                </div>
+           </transition>
+  
+          `,
+          mounted() {
+              this.$bus.$on('message-close', () => {
+                this.$emit('update:show', false)
+              })
+          }
+      })
+      // 模拟异步数据加载
+      function getCourse() {
+        return new Promise(resolve => {
+            setTimeout(function(){
+               resolve([{name:'web 全栈' },{name: 'web 高级'} ])
+            },2000)
+
+        })
+      }
+      let app = new Vue({
+          el: '#app',
+          data() {
+              return {
+                  title: '123',
+                  dataList: [],
+                  text: '',
+                  show: false,
+                  showWarn: false,
+                  price: '0'
+              }
+          },
+          computed:{
+              count() {
+                  return this.dataList.length + '门'
+              }
+          },
+        //   watch: {
+        //       dataList: {
+        //           immediate: true,  // 设置这个默认首次需要加载，默认首次进来是不用加载的
+        //           deep:true,
+        //           handler(oldVal,newVal){
+        //               this.count = newVal.length + '门'
+        //           }
+        //       }
+
+        //   },
+          beforeCreate(){console.log('beforeCreate')}, // 执行组件实例还未创建，通常用于插件开发中用于初始化任务
+          created() {
+              console.log('created')  //组件初始化完毕，各种数据可以使用，常用于各种异步数据获取
+          },
+          beforeMount() {
+              console.log('beforeMount')  // 未执行渲染 更新  dom 未创建
+          },
+          mounted() {
+              console.log('mounted')  //初始化结束，dom 已创建 可用于获取访问数据和dom 元素
+              this.getData()
+              this.updatePrice()
+          },
+          beforeUpdate() {
+              console.log('beforeUpdate')  // 更新前，可获取更新前各种数据数据状态
+          },
+          updated() {
+              console.log('updated')  // 更新后数据状态已是最新
+          },
+          methods: {
+              render() {
+                  with(this){return _c('div',{attrs:{"id":"app"}},[_c('div',[_v(_s(title))])])}
+              },
+              addList() {
+                  if(this.text){
+                    this.dataList.push({name:this.text})
+                    this.text = ''
+                    this.show = true
+                  }else{
+                    this.showWarn = true
+                  }
+              },
+              updatePrice() {
+                  // 如果是在初始化数据里不存在的数据属性 在使用的时候需要使用
+                  // 需要更改的对象  需要更改的对象属性  需要更改的最后的值
+                  // this.$set(c, 'price', this.price)
+                  // this.$delete(c, 'price', this.price)
+                  console.log(this.price)
+                  this.dataList.map(c => {
+                    //   c.price = this.price
+                      this.$set(c, 'price',this.price)
+                  })
+              },
+              closeMessage() {
+                  this.$bus.$emit('message-close')
+              },
+              async getData() {
+                  let res = await getCourse()
+                  this.dataList = res
+              }
+          }
+      })
+      console.log(app.$options.render)
+  </script>
+</body>
+</html>

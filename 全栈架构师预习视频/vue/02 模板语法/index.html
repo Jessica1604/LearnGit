@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+        .active{
+            color: blueviolet
+        }
+</style>
+<body>
+  <div id="app">
+      <div>{{title}}</div>
+      <div :class="{active:title == '123'}">{{title}}</div>
+      <input type="text" v-model="text">
+      <input type="button" @click="addList" value="添加">
+      <ul>
+          <li v-for="item in dataList" :key="item">{{item}}</li>
+      </ul>
+      <div>课程总数:{{count}}</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+      // 模拟异步数据加载
+      function getCourse() {
+        return new Promise(resolve => {
+            setTimeout(function(){
+               resolve(['web 全栈', 'web 高级'])
+            },2000)
+
+        })
+      }
+      let app = new Vue({
+          el: '#app',
+          data() {
+              return {
+                  title: '123',
+                  dataList: [],
+                  text: ''
+              }
+          },
+          computed:{
+              count() {
+                  return this.dataList.length + '门'
+              }
+          },
+        //   watch: {
+        //       dataList: {
+        //           immediate: true,  // 设置这个默认首次需要加载，默认首次进来是不用加载的
+        //           deep:true,
+        //           handler(oldVal,newVal){
+        //               this.count = newVal.length + '门'
+        //           }
+        //       }
+
+        //   },
+          beforeCreate(){console.log('beforeCreate')}, // 执行组件实例还未创建，通常用于插件开发中用于初始化任务
+          created() {
+              console.log('created')  //组件初始化完毕，各种数据可以使用，常用于各种异步数据获取
+          },
+          beforeMount() {
+              console.log('beforeMount')  // 未执行渲染 更新  dom 未创建
+          },
+          mounted() {
+              console.log('mounted')  //初始化结束，dom 已创建 可用于获取访问数据和dom 元素
+              this.getData()
+          },
+          beforeUpdate() {
+              console.log('beforeUpdate')  // 更新前，可获取更新前各种数据数据状态
+          },
+          updated() {
+              console.log('updated')  // 更新后数据状态已是最新
+          },
+          methods: {
+              render() {
+                  with(this){return _c('div',{attrs:{"id":"app"}},[_c('div',[_v(_s(title))])])}
+              },
+              addList() {
+                  this.dataList.push(this.text)
+                  this.text = ''
+              },
+              async getData() {
+                  let res = await getCourse()
+                  this.dataList = res
+              }
+          }
+      })
+      console.log(app.$options.render)
+  </script>
+</body>
+</html>

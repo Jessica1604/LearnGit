@@ -1,6 +1,7 @@
 (async () => {
     const Sequelize = require('sequelize');
     // create connnection 
+    // 
     const sequelize = new Sequelize('jessica', 
       'root',
       'root',
@@ -16,12 +17,12 @@
             type: Sequelize.DataTypes.UUID,
             defaultValue: Sequelize.DataTypes.UUIDV1,
             primaryKey: true
-        },
+        },  // 这是一个比较重要的知识点
         name: {type: Sequelize.STRING(20), allowNull: false},
         price: {type: Sequelize.FLOAT, allowNull: false},
         stock : {type: Sequelize.INTEGER, defaultValue: 0}
     },{
-        timestamps: false,
+        timestamps: false, // 时间戳的保留与否
         tableName: 'runAway'
 
     })

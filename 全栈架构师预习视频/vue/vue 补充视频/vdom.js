@@ -47,9 +47,18 @@ function createElement(tag,data,children){
 }
 
 function render(vnode,container) {
-    // 首次挂载和后面挂载
-    mount(vnode,container)
 
+    if(container.vnode){
+        patch(container.vnode,vnode,container)
+    }else{
+        // 首次挂载和后面挂载
+        mount(vnode,container)
+    }
+    container.vnode = vnode
+}
+
+function patch(prev,next,dom){
+    
 }
 
 function mount(vnode,container) {

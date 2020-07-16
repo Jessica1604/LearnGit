@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+        .active{
+            color: blueviolet
+        }
+        .message-box{
+           width:200px;
+           height:40px;
+           line-height:40px;
+           padding:5px;
+           background: blueviolet;
+           font-size:14px;
+           text-align:center;
+        }
+        .close{
+            float:right;
+            display: inline-block;
+            width:20px;
+            height:20px;
+            text-align:center;
+            line-height:20px;
+        }
+</style>
+<body>
+  <div id="app">
+      <!-- 
+          :show.sync = "show"  相当与  @update:show = ""
+          在控制弹框的打开或关闭的时候 需要这样写
+          @click="$emit('update:show', false)"
+          课程新增属于Vue 里的插槽 <slot></slot>
+       -->
+      <message :show.sync="show">
+          <!-- 具名插槽 -->
+          <template v-slot:title>
+            <strong>ha ha</strong>
+          </template>
+          <!--匿名插槽 -->
+          <template v-slot:default>
+                课程新增成功
+          </template>
+      </message>
+      <message :show.sync="showWarn">
+            <!-- 具名插槽 -->
+            <template v-slot:title>
+              <strong>警告</strong>
+            </template>
+            <!--匿名插槽 -->
+            <template v-slot:default>
+                  请输入内容
+            </template>
+        </message>
+      <course-add @add-list="addList" v-model="text"></course-add>
+      <p>
+          <input type="text" v-model.number="price">
+          <button @click=updatePrice>价格设置</button>
+      </p>
+      <div>
+          <button @click="closeMessage">批量清除</button>
+        </div>
+      <course-list :data="dataList"></course-list>
+      <!-- <ul>
+          <li v-for="item in dataList" :key="item">{{item}}</li>
+      </ul> -->
+      <div>课程总数:{{count}}</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+      // 事件总线   
+      // 事件总线派发事件
+      // this.$bus.$emit('message-close')
+      // 事件总线接收事件
+      //  this.$bus.$on('message-close',() => {
+      //    this.$emit('update:show', false)    
+      //})
+      // vm.$on()
+      // vm.$emit()
+      // vm.$once()
+      // vm.$off()  // 什么都不写表示取消所有事件的监听
+      // vm.$off(‘add’)  // 取消监听名为add 的事件
+      // vm.$off('add', callback) // 取消事件监听的回调
+      // 纯js 的方式实现 动画
+      // @before-enter @enter @before-leave @leave
+      //  beforeEnter(el) {
+      //    el.style.opacity = 0
+      //}
+      // enter() {
+      //   el.offsetHeight   // 让元素的高度自适应
+      //   el.style.opacity = 1   // 将透明度改为1
+      //   el.addEventListener('transitioned', done)  // 执行事件回流函数
+      // }
+      //
+
+      Vue.prototype.$bus = new Vue();
+    //   Vue.property.$bus = new Vue()
+      //  列表组件 组件的命名最好是羊肉串命名法，因为html标签不区分大小写 驼峰命名法是不推荐
+      // props 可以是 ['dataList'] 的形式也可以是 对象的形式 对象的形式比较好可以进行标记
+      Vue.component('course-list',{
+          props:{
+            data:{
+                type:Array,
+                default:()=>{
+                    return []
+                }
+            }
+          },
+          data() {
+              return {
+
+              }
+          },
+          template: `
+            <div>
+                <ul>
+                  <li v-for="item in data" :key="item.name">
+                  {{item.name}}
+                  <span>$</span>
+                  {{item.price}}
+                  </li>
+                </ul>
+            </div>
+          `
+      })
+
+      // 在自定义组件中没有 v-model 
+      // 这个 v-model 是一个语法糖 主要是input 里的 @input 事件和 ：value 事件
+      Vue.component('course-add',{
+        //  model: {
+        //    prop: 'value',
+        //    event: 'change'
+        //   },
+          props: ['text'],
+          template: `
+            <div>
+                <input type="text"  :value="text" @input="onInput">
+                <input type="button" @click="addList" value="添加">
+            </div>
+          `,
+          methods: {
+              addList(){
+                  this.$emit('add-list')
+              },
+              onInput(e) {
+                  this.$emit('input', e.target.value)
+
+              }
+          }
+      })
+      // messagebox 弹框
+      Vue.component('message',{
+          props:['show'],
+          template: `
+           <transition
+             @before-enter="beforeEnter"
+             @enter="enter"
+             @before-leave="beforeLeave"
+             @leave="leave"
+           >
+                <div class="message-box" v-if="show">
+                    <slot name="title"></slot>
+                    <slot></slot>
+                    <span class="close" @click="$emit('update:show', false)">X</span>
+                </div>
+           </transition>
+  
+          `,
+          mounted() {
+              this.$bus.$on('message-close', () => {
+                this.$emit('update:show', false)
+              })
+          },
+          methods:{
+              beforeEnter(el) {
+                  el.style.opacity = 0
+              },
+              enter(el,done){
+                  el.offsetHeight
+                  el.style.opacity = 1
+                  el.addEventListener('transitioned', done)
+              },
+              beforeLeave(el) {
+                  el.style.opacity = 0
+              },
+              leave(el,done){
+                  el.offsetHeight
+                  el.style.opacity = 1
+                  el.addEventListener('transitioned', done)
+              }
+              
+          }
+      })
+      // 模拟异步数据加载
+      function getCourse() {
+        return new Promise(resolve => {
+            setTimeout(function(){
+               resolve([{name:'web 全栈' },{name: 'web 高级'} ])
+            },2000)
+
+        })
+      }
+      let app = new Vue({
+          el: '#app',
+          data() {
+              return {
+                  title: '123',
+                  dataList: [],
+                  text: '',
+                  show: false,
+                  showWarn: false,
+                  price: ''
+              }
+          },
+          computed:{
+              count() {
+                  return this.dataList.length + '门'
+              }
+          },
+        //   watch: {
+        //       dataList: {
+        //           immediate: true,  // 设置这个默认首次需要加载，默认首次进来是不用加载的
+        //           deep:true,
+        //           handler(oldVal,newVal){
+        //               this.count = newVal.length + '门'
+        //           }
+        //       }
+
+        //   },
+          beforeCreate(){console.log('beforeCreate')}, // 执行组件实例还未创建，通常用于插件开发中用于初始化任务
+          created() {
+              console.log('created')  //组件初始化完毕，各种数据可以使用，常用于各种异步数据获取
+          },
+          beforeMount() {
+              console.log('beforeMount')  // 未执行渲染 更新  dom 未创建
+          },
+          mounted() {
+              console.log('mounted')  //初始化结束，dom 已创建 可用于获取访问数据和dom 元素
+              this.getData()
+              this.updatePrice()
+          },
+          beforeUpdate() {
+              console.log('beforeUpdate')  // 更新前，可获取更新前各种数据数据状态
+          },
+          updated() {
+              console.log('updated')  // 更新后数据状态已是最新
+          },
+          methods: {
+              render() {
+                  with(this){return _c('div',{attrs:{"id":"app"}},[_c('div',[_v(_s(title))])])}
+              },
+              addList() {
+                  if(this.text){
+                    this.dataList.push({name:this.text})
+                    this.text = ''
+                    this.show = true
+                  }else{
+                    this.showWarn = true
+                  }
+              },
+              updatePrice() {
+                  // 如果是在初始化数据里不存在的数据属性 在使用的时候需要使用
+                  // 需要更改的对象  需要更改的对象属性  需要更改的最后的值
+                  // this.$set(c, 'price', this.price)
+                  // this.$delete(c, 'price', this.price)
+                  console.log(this.price)
+                  this.dataList.map(c => {
+                    //   c.price = this.price
+                      this.$set(c, 'price',this.price)
+                  })
+              },
+              closeMessage() {
+                  this.$bus.$emit('message-close')
+              },
+              async getData() {
+                  let res = await getCourse()
+                  this.dataList = res
+              }
+          }
+      })
+      console.log(app.$options.render)
+  </script>
+</body>
+</html>
