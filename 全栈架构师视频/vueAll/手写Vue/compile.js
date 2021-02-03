@@ -57,11 +57,6 @@ class Compile{
                 if(attrname === 'k-html'){
                     // 当k-html 存在的时候
                     console.log('属性更新我进来了')
-                    // let updateFn = this['html' + 'Updater']
-                    // updateFn && updateFn(node, exp)
-                    // let dir = attrname.substring(2)
-                    // this[dir] && this[dir](node,this.$vm,exp)
-                    // console.log(dir)
                     this.update(node,this.$vm,exp,'html')
                     
                 }

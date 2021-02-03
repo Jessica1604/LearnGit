@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p >{{foo}}</p>
+        <p>{{bar}}</p>
+        <p k-html="foo"></p>
+    </div>
+    <script src="./compile.js"></script>
+    <script src="./kvue.js"></script>
+    <script>
+        let app = new Kvue({
+            el: '#app',
+            data: {
+                    foo: 'this is foo',
+                    bar: 'this is bar'
+            },
+            created() {
+                console.log('我进行更新了')
+                setTimeout(() => {
+                //   console.log('我进来🌶')
+                //   console.log(this.foo)
+                    this.$data.foo = '彼岸花开彼岸'
+                //   console.log(this.foo)
+                },2000)
+            }
+        })
+    //   console.log(app)
+    //   app.foo = '人面桃花相映红'
+      app.$data.foo = '人面桃花相映红'
+    //   app.bar = '桃花依旧笑春风'
+    </script>
+    
+</body>
+</html>

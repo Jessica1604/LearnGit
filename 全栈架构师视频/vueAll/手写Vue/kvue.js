@@ -63,7 +63,7 @@ class Dep{  // 创建观察者 一个数据属性对应一个dep 一个dep 对�
 }
 
 class Watcher{   // watcher 模式 监听器负责更新视图 执行具体的更新
-    constructor(vm,key, updater) {
+    constructor(vm, key, updater) {
         
         this.vm = vm
         this.key = key  
