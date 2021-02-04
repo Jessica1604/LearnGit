@@ -40,51 +40,51 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
-import kForm from '@/components/form/index.vue'
+    // @ is an alias to /src
+    // import HelloWorld from '@/components/HelloWorld.vue'
+    import kForm from '@/components/form/index.vue'
 
-export default {
-  name: 'Home',
-    props:{
-        clearable: {
-            type: Boolean,
-            default: true,
-        }
-    },
-  provide() {
-   return {
-     someThing: '海水梦悠悠，君愁我亦愁'
-   }
-  },
-  components: {
-    // HelloWorld,
-    kForm
-  },
-  computed: {
-    showsClear () {
-      return this.clearable && this.url && this.isHover
-    },
-  },
-  data() {
-    return {
-      work: '小舟从此逝,江海寄余生',
-      isHover: false,
-      url:'',
-      videoTableData :[]
-    }
-  },
-  mounted () {
-    // this.$refs['hello'].bg = 'I lost you forever'
-    // this.$children[0].bg = "I can't find you "
-    this.$children[0].bg = "I can't find you"
-    this.$refs['hello'].bg = ' 海水梦悠悠，君愁我亦愁 I lost you forever'
-    this.$refs['hello'].bg = ''
-    this.$refs['hello'].bg = ''
-    this.$refs['hello'].bg = ''
-    this.$refs['hello'].bg = 'ererwerwerwerwerwerwe'
-    this.$refs['hello'].bg = 'wrwerwerwer与兔兔'
-    this.getvideoTableData ()
+    export default {
+        name: 'Home',
+        props: {
+            clearable: {
+                type: Boolean,
+                default: true,
+            }
+        },
+        provide() {
+            return {
+                someThing: '海水梦悠悠，君愁我亦愁'
+            }
+        },
+        components: {
+            // HelloWorld,
+            kForm
+        },
+        computed: {
+            showsClear() {
+                return this.clearable && this.url && this.isHover
+            },
+        },
+        data() {
+            return {
+                work: '小舟从此逝,江海寄余生',
+                isHover: false,
+                url: '',
+                videoTableData: []
+            }
+        },
+        mounted() {
+            // this.$refs['hello'].bg = 'I lost you forever'
+            // this.$children[0].bg = "I can't find you "
+            this.$children[0].bg = "I can't find you"
+            this.$refs['hello'].bg = ' 海水梦悠悠，君愁我亦愁 I lost you forever'
+            this.$refs['hello'].bg = ''
+            this.$refs['hello'].bg = ''
+            this.$refs['hello'].bg = ''
+            this.$refs['hello'].bg = 'ererwerwerwerwerwerwe'
+            this.$refs['hello'].bg = 'wrwerwerwer与兔兔'
+            this.getvideoTableData()
   },
   methods: {
     handleIconClick () {

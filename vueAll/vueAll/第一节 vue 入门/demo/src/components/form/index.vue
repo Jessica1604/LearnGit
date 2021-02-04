@@ -19,11 +19,11 @@
 </template>
 
 <script>
-   import kInput from './kInput.vue'
-   import kFormItem from './kFormItem.vue';
-   import kForm from './kForm.vue'
-//    import create from '@/until/create'
-//    import notice from '@/components/notice.vue'
+    import kInput from './kInput.vue'
+    import kFormItem from './kFormItem.vue';
+    import kForm from './kForm.vue'
+    //    import create from '@/until/create'
+    //    import notice from '@/components/notice.vue'
     export default {
         components: {
             kInput,

@@ -10,6 +10,7 @@
 
 <script>
     import Schema from 'async-validator'
+
     export default {
         inject: ['form'],
         props: {
